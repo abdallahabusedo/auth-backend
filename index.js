@@ -8,6 +8,7 @@ const auth = require("./auth");
 const dbConnect = require("./db/dbConnection");
 const User = require("./db/userModel");
 const port = 3001;
+const ObjectID = require("mongodb").ObjectId;
 dbConnect();
 
 // Curb Cores Error by adding a header here
@@ -31,9 +32,70 @@ app.listen(port, () => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.post("/deposits", async (request, response) => {
+  const token = request.headers.authorization.split(" ")[1];
+  let a;
+  const x = await jwt.verify(token, "RANDOM-TOKEN", function (err, decoded) {
+    if (err) throw err;
+    a = decoded;
+  });
+  if (!a) {
+    response.status(500).send({
+      message: "Token not valid",
+    });
+  } else {
+    User.findOneAndUpdate(
+      { _id: new ObjectID(a.userId) },
+      {
+        $push: {
+          deposits: {
+            totalAmount: request.body.totalAmount,
+            currentDate: request.body.currentDate,
+            goalDate: request.body.goalDate,
+            monthlyPayment: request.body.monthlyPayment,
+          },
+        },
+      },
+      { new: true }
+    ).then((res) => {
+      console.log(res);
+    });
+  }
+});
+
+app.get("/deposits", async (request, response) => {
+  const token = request.headers.authorization.split(" ")[1];
+  let a;
+  const x = await jwt.verify(token, "RANDOM-TOKEN", function (err, decoded) {
+    if (err) throw err;
+    a = decoded;
+  });
+  if (!a) {
+    response.status(500).send({
+      message: "Token not valid",
+    });
+  } else {
+    User.find({ _id: new ObjectID(a.userId) })
+      .then((res) => {
+        let userDeposits = res[0].deposits;
+        let depositMap = [];
+        userDeposits.forEach((deposit, index) => {
+          depositMap[index] = deposit;
+        });
+        console.log(depositMap);
+        response.status(200).send(depositMap);
+      })
+      .catch((error) => {
+        response.status(500).send({
+          message: "Error finding deposits",
+          error,
+        });
+      });
+  }
+});
+
 app.post("/register", (request, response) => {
   // hash the password
-  console.log("rrere", request.body);
   bcrypt
     .hash(request.body.password, 10)
     .then((hashedPassword) => {

@@ -11,6 +11,12 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please provide a password!"],
     unique: false,
   },
+
+  deposits: {
+    type: [],
+    unique: false,
+    default: [],
+  },
 });
 
 module.exports = mongoose.model.Users || mongoose.model("Users", UserSchema);

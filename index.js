@@ -51,9 +51,16 @@ app.post("/deposits", async (request, response) => {
         },
       },
       { new: true }
-    ).then((res) => {
-      console.log(res);
-    });
+    )
+      .then((res) => {
+        response.status(200).send("hello");
+      })
+      .catch((error) => {
+        response.status(500).send({
+          message: "Error finding deposits",
+          error,
+        });
+      });
   }
 });
 
@@ -76,7 +83,6 @@ app.get("/deposits", async (request, response) => {
         userDeposits.forEach((deposit, index) => {
           depositMap[index] = deposit;
         });
-        console.log(depositMap);
         response.status(200).send(depositMap);
       })
       .catch((error) => {

@@ -12,33 +12,12 @@ const port = 3001;
 const ObjectID = require("mongodb").ObjectId;
 dbConnect();
 
-/** CORS setting with OPTIONS pre-flight handling */
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Content-Type, Authorization, accept, access-control-allow-origin"
-//   );
-
-//   if ("OPTIONS" == req.method) res.send(200);
-//   else next();
-// });
-app.use(cors());
-app.options("*", cors());
-// Curb Cores Error by adding a header here
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-//   );
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-//   );
-//   next();
-// });
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+// app.options("*", cors());
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
